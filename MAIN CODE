@@ -1,0 +1,88 @@
+#define BLYNK_TEMPLATE_ID "TMPL6pYJeQUsa"
+#define BLYNK_TEMPLATE_NAME "Air Monitoring Simulation"
+#define BLYNK_AUTH_TOKEN "grecyEGJ0IzFZLhM-gf6BrsFL5VVksVj"
+
+#define BLYNK_PRINT Serial
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h> // Include only one version of the LiquidCrystal_I2C library
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+char auth[] = BLYNK_AUTH_TOKEN; // Declare auth at global scope
+
+byte degree_symbol[8] =
+    {
+        0b00111,
+        0b00101,
+        0b00111,
+        0b00000,
+        0b00000,
+        0b00000,
+        0b00000,
+        0b00000};
+
+char ssid[] = "NOBITA"; // type your wifi name
+char pass[] = "nirob777x"; // type your wifi password
+
+BlynkTimer timer;
+int gas = A0;
+int sensorThreshold = 100;
+
+void sendSensor()
+{
+  int analogSensor = analogRead(gas);
+  Blynk.virtualWrite(V2, analogSensor);
+  Serial.print("Gas Value: ");
+  Serial.println(analogSensor);
+}
+
+void setup()
+{
+  Serial.begin(115200);
+
+  Blynk.begin(auth, ssid, pass); // Use auth, ssid, and pass here
+  timer.setInterval(30000L, sendSensor);
+
+  lcd.begin();
+  lcd.setCursor(3, 0);
+  lcd.print("Air Quality");
+  lcd.setCursor(3, 1);
+  lcd.print("Monitoring......");
+  delay(2000);
+  lcd.clear();
+}
+
+void loop()
+{
+  Blynk.run();
+  timer.run();
+
+  int gasValue = analogRead(gas);
+  lcd.setCursor(0, 0);
+  lcd.print("Gas Value: ");
+  lcd.print(gasValue);
+
+  if (gasValue < 600)
+  {
+    lcd.setCursor(0, 1);
+    lcd.print("Fresh Air");
+    Serial.println("Fresh Air");
+    delay(4000);
+    lcd.clear();
+  }
+  else if (gasValue > 600)
+  {
+    lcd.setCursor(0, 1);
+    lcd.print("Bad Air");
+    Serial.println("Bad Air");
+    delay(4000);
+    lcd.clear();
+  }
+
+  if(gasValue > 600){
+    //Blynk.email("saifulislamnirob45@gmail.com", "Alert", "Bad Air!");
+    Blynk.logEvent("pollution_alert","Alert: Our air quality monitoring system indicates high pollution levels. This poses health risks. Please take immediate precautions. Limit outdoor activities, use masks, and stay informed. Your well-being is our priority. #AirQualityEmergency");
+  }
+}
