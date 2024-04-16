@@ -1,6 +1,6 @@
-#define BLYNK_TEMPLATE_ID "TMPL6pYJeQUsa"
-#define BLYNK_TEMPLATE_NAME "Air Monitoring Simulation"
-#define BLYNK_AUTH_TOKEN "grecyEGJ0IzFZLhM-gf6BrsFL5VVksVj"
+#define BLYNK_TEMPLATE_ID "TMPL6f55DVlQg"
+#define BLYNK_TEMPLATE_NAME "LPG DETECTOR"
+#define BLYNK_AUTH_TOKEN "MbSTfOL1PqXTkogxvfU8fdEZ585tffJf"
 
 #define BLYNK_PRINT Serial
 #include <ESP8266WiFi.h>
@@ -23,8 +23,8 @@ byte degree_symbol[8] =
         0b00000,
         0b00000};
 
-char ssid[] = "NOBITA"; // type your wifi name
-char pass[] = "nirob777x"; // type your wifi password
+char ssid[] = "DHSC"; // type your wifi name
+char pass[] = "12345678"; // type your wifi password
 
 BlynkTimer timer;
 int gas = A0;
@@ -47,9 +47,9 @@ void setup()
 
   lcd.begin();
   lcd.setCursor(3, 0);
-  lcd.print("Air Quality");
+  lcd.print("  LPG  ");
   lcd.setCursor(3, 1);
-  lcd.print("Monitoring......");
+  lcd.print("Detecting......");
   delay(2000);
   lcd.clear();
 }
@@ -64,7 +64,7 @@ void loop()
   lcd.print("Gas Value: ");
   lcd.print(gasValue);
 
-  if (gasValue < 600)
+  if (gasValue < 500)
   {
     lcd.setCursor(0, 1);
     lcd.print("Fresh Air");
@@ -72,7 +72,7 @@ void loop()
     delay(4000);
     lcd.clear();
   }
-  else if (gasValue > 600)
+  else if (gasValue > 500)
   {
     lcd.setCursor(0, 1);
     lcd.print("Bad Air");
@@ -81,8 +81,8 @@ void loop()
     lcd.clear();
   }
 
-  if(gasValue > 600){
-    //Blynk.email("saifulislamnirob45@gmail.com", "Alert", "Bad Air!");
-    Blynk.logEvent("pollution_alert","Alert: Our air quality monitoring system indicates high pollution levels. This poses health risks. Please take immediate precautions. Limit outdoor activities, use masks, and stay informed. Your well-being is our priority. #AirQualityEmergency");
+  if(gasValue > 500){
+    //Blynk.email("lpgdetector0@gmail.com", "Alert", "Gas Detected!");
+    Blynk.logEvent("lpg_detect","EMERGENCY: Gas leak detected in the building! Evacuate now! Gas leaks are highly dangerous. Leave doors and windows open, exit calmly, and alert others. Call emergency services immediately. Stay safe, stay out, and stay vigilant. #GasLeakEmergency");
   }
 }
